@@ -17,31 +17,28 @@ struct VolsCorr2d
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
 
   /// The volatilities.
-  Eigen::Vector2d vols;
+  const Eigen::Vector2d vols;
 
   /// The correlation.
-  double corr;
+  const double corr;
 
   VolsCorr2d(double vol1, double vol2, double corr):
-    vols(std::vector<double>({vol1, vol2}).data()),
+    vols({vol1, vol2}),
     corr(corr)
   {}
 
-  VolsCorr2d(const Eigen::Matrix2d& cov)
-  {
-    vols(0) = std::sqrt(cov(0,0));
-    vols(1) = std::sqrt(cov(1,1));
-    corr = cov(0,1)/vols(0)/vols(1);
-  }
+  VolsCorr2d(const Eigen::Matrix2d& cov):
+    vols({std::sqrt(cov(0,0)), std::sqrt(cov(1,1))}),
+    corr(cov(0,1)/vols(0)/vols(1))
+  {}
 
+  /// Convert to a covariance matrix
   Eigen::Matrix2d ToMatrix() const 
   {
-    Eigen::Matrix2d cov;
-    cov(0,0) = vols(0)*vols(0);
-    cov(1,1) = vols(1)*vols(1);
-    cov(0,1) = vols(0)*vols(1)*corr;
-    cov(1,0) = cov(0,1);
-    return cov;
+    return Eigen::Matrix2d({
+      {vols(0)*vols(0), vols(0)*vols(1)*corr},
+      {vols(0)*vols(1)*corr, vols(1)*vols(1)}
+    });
   }
 };
 

@@ -1,0 +1,3 @@
+[submodule "extlibs/eigen-initializer_list"]
+	path = extlibs/eigen-initializer_list
+	url = https://github.com/hauptmech/eigen-initializer_list

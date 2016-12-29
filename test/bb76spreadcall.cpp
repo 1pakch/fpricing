@@ -14,7 +14,8 @@ double bb76spreadCall(double F1, double F2, double strike,
                       double tau)
 {
   auto model = BB76(v1, v2, rho);
-  auto dist = model.DistributionOfReturns(F1, F2, tau);
+  auto state = BB76::State::FromPrices(F1, F2);
+  auto dist = model.DistributionOfReturns(state, tau);
   return ndspreadcall(dist, strike);
 }
 

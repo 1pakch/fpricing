@@ -3,6 +3,8 @@
 #ifndef BB76_HPP
 #define BB76_HPP 
 
+#include <eigen3/Eigen/Dense>
+
 #include <fpricing/math/normdist2d.hpp>
 
 
@@ -11,9 +13,9 @@ namespace fpricing {
 /// Bivariate extension of Black-76 model.
 struct BB76
 {
-  const double vol1;
-  const double vol2;
-  const double corr;
+  const double vol1; /// Instantaneous volatility of the first futures
+  const double vol2; /// Instantaneous volatility of the second futures
+  const double corr; /// Instantaneous correlation
 
   BB76(double v1, double v2, double corr):
     vol1(v1),
@@ -21,14 +23,27 @@ struct BB76
     corr(corr)
   {}
 
-  math::NormDist2d DistributionOfReturns(double F1, double F2, double tau)
+  /// State of the model - current log prices.
+  class State: public Eigen::Vector2d
   {
-      Eigen::Vector2d mu;
-      Eigen::Matrix2d cov;
-      cov = tau * math::VolsCorr2d(vol1, vol2, corr).ToMatrix();
-      mu = -0.5*cov.diagonal();
-      mu(0) += std::log(F1);
-      mu(1) += std::log(F2);
+    // Vector2d is a typedef of Matrix<double, 2, 1>
+    using Eigen::Vector2d::Vector2d;
+   public:
+    static State FromPrices(double F1, double F2)
+    {
+      return State({std::log(F1), std::log(F2)});
+    }
+    static State FromLogPrices(double f1, double f2)
+    {
+      return State({f1, f2});
+    };
+  };
+  
+  /// The distribution of returns at a given horizon.
+  math::NormDist2d DistributionOfReturns(State state, double tau)
+  {
+      auto cov = tau * math::VolsCorr2d(vol1, vol2, corr).ToMatrix();
+      auto mu = -0.5*cov.diagonal() + state;
       return math::NormDist2d(mu, cov);
   }
 };

@@ -13,7 +13,8 @@ double bb76spreadCall(double F1, double F2, double strike,
                       double v1, double v2, double rho,
                       double tau)
 {
-  auto model = BB76(v1, v2, rho);
+  auto cov = math::covmatrix<2>::from_vols_and_corr(v1, v2, rho);
+  auto model = BB76(cov);
   auto state = BB76::State::FromPrices(F1, F2);
   auto dist = model.DistributionOfReturns(state, tau);
   return ndspreadcall(dist, strike);
@@ -26,11 +27,11 @@ BOOST_AUTO_TEST_CASE(bb76pricing)
     BOOST_CHECK_CLOSE(0.041131,
         bb76spreadCall( 10,   7,  5, 0.2, 0.2, 0.50, 0.5),
         0.01);
-    
+
     BOOST_CHECK_CLOSE(0.002343,
         bb76spreadCall( 10,   7,  5, 0.2, 0.2, 0.99, 1.0),
         0.01);
-    
+
     BOOST_CHECK_CLOSE(0.256690,
         bb76spreadCall(110, 100, 10, 0.3, 0.3, 0.90, 0.002),
         0.01);

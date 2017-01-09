@@ -1,33 +1,29 @@
 // bb76.hpp - bivariate Black-76 model.
 
 #ifndef BB76_HPP
-#define BB76_HPP 
+#define BB76_HPP
 
-#include <eigen3/Eigen/Dense>
-
-#include <fpricing/math/normdist2d.hpp>
+#include <fpricing/math/types.hpp>
+#include <fpricing/math/normal.hpp>
 
 
 namespace fpricing {
 
+
 /// Bivariate extension of Black-76 model.
 struct BB76
 {
-  const double vol1; /// Instantaneous volatility of the first futures
-  const double vol2; /// Instantaneous volatility of the second futures
-  const double corr; /// Instantaneous correlation
+  const math::covmatrix<2> cov_; ///< Instantaneous covariance matrix.
 
-  BB76(double v1, double v2, double corr):
-    vol1(v1),
-    vol2(v2),
-    corr(corr)
+  BB76(const math::covmatrix<2>& cov):
+    cov_(cov)
   {}
 
   /// State of the model - current log prices.
-  class State: public Eigen::Vector2d
+  class State: public math::vector<2>
   {
-    // Vector2d is a typedef of Matrix<double, 2, 1>
-    using Eigen::Vector2d::Vector2d;
+    // vector is a template typedef
+    using math::vector<2>::vector;
    public:
     static State FromPrices(double F1, double F2)
     {
@@ -38,13 +34,13 @@ struct BB76
       return State({f1, f2});
     };
   };
-  
+
   /// The distribution of returns at a given horizon.
-  math::NormDist2d DistributionOfReturns(State state, double tau)
+  math::distr::Normal<2> DistributionOfReturns(State state, double tau)
   {
-      auto cov = tau * math::VolsCorr2d(vol1, vol2, corr).ToMatrix();
-      auto mu = -0.5*cov.diagonal() + state;
-      return math::NormDist2d(mu, cov);
+      auto cov_tau = tau * cov_;
+      auto mu_tau = -0.5 * cov_tau.diagonal() + state;
+      return math::distr::Normal<2>(mu_tau, cov_tau);
   }
 };
 

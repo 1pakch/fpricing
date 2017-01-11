@@ -1,4 +1,4 @@
-// normal.hpp - multivariate Normal distribution
+// normal.hpp - normal distribution
 
 #ifndef NORMAL_HPP
 #define NORMAL_HPP
@@ -8,8 +8,22 @@
 
 namespace fpricing {
 namespace math {
-namespace distr {
 
+
+/// Cdf of a standard normal random variable.
+double stdnormcdf(double x)
+{
+  return std::erfc(-M_SQRT1_2 * x) / 2;
+}
+
+/// Pdf of a standard normal random variable.
+double stdnormpdf(double x)
+{
+  return 1/std::sqrt(2*M_PI) * std::exp(-x*x/2);
+}
+
+
+namespace distr {
 
 /// A multivariate normal distibution
 template<int N>

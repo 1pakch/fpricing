@@ -10,7 +10,7 @@ add_executable(bb76spreadcall
 	bb76spreadcall.cpp)
 
 target_link_libraries(
-	normal_distr
+	normal
 	fpricing
 	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 

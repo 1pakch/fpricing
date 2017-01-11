@@ -3,7 +3,6 @@
 #ifndef NDSPREADCALL_HPP
 #define NDSPREADCALL_HPP
 
-#include <boost/math/distributions/normal.hpp>
 #include <fpricing/math/types.hpp>
 #include <fpricing/math/normal.hpp>
 #include <fpricing/math/gauss_legendre.hpp>
@@ -22,7 +21,6 @@ struct CeSpreadCallPayoff
   const double strike;
   const double b;
   const double b2;
-  boost::math::normal stdnorm;
 
   CeSpreadCallPayoff(
       const math::distr::Normal<2> logret,
@@ -40,13 +38,13 @@ struct CeSpreadCallPayoff
 
   double operator() (double z) const
   {
-      double a = mu1 + v1*rho*z;
-      double c = strike + std::exp(mu2+v2*z);
-      double d1 = (a + b2 - std::log(c))/b;
-      double d2 = d1 - b;
-      double y = std::exp(a+b2/2)*cdf(stdnorm, d1) - c*cdf(stdnorm, d2);
-      y *= pdf(stdnorm, z);
-      return y;
+    double a = mu1 + v1*rho*z;
+    double c = strike + std::exp(mu2+v2*z);
+    double d1 = (a + b2 - std::log(c))/b;
+    double d2 = d1 - b;
+    double y = std::exp(a+b2/2)*math::stdnormcdf(d1) - c*math::stdnormcdf(d2);
+    y *= math::stdnormpdf(z);
+    return y;
   }
 };
 

@@ -32,8 +32,10 @@ class Normal
  public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  vector<N> mean; ///< The mean.
+  vector<N> mean;   ///< The mean.
   covmatrix<N> cov; ///< The covariance matrix.
+
+  constexpr double ndim() const { return N; };
 
   template<typename Mean, typename Cov>
   Normal(Mean mean, Cov cov):
@@ -42,28 +44,25 @@ class Normal
   {}
 
   // The distribution resulting from premultiplying by a matrix A.
-  decltype(auto) premultiply(const Eigen::MatrixXd& A)
+  template<int K>
+  Normal<K> premultiply(matrix<K, N> A)
   {
-    return Normal(A*mean, A*cov*A.transpose());
+    return Normal<K>(A*mean, A*cov*A.transpose());
   }
 
-  // The distribution resulting from adding a constant vector
+  // The distribution resulting from adding a constant vector.
   decltype(auto) add(const vector<N>& mu)
   {
     return Normal(mean + mu, cov);
   }
 
   // Returns the log Laplace transform function.
-  decltype(auto) get_log_laplace_transform()
+  komplex log_laplace_transform(cxvector<N> z)
   {
-    auto mean_ = mean;
-    auto cov_ = cov;
-    return [mean_, cov_](cxvector<N> z){
-      return (
-          mean_.transpose() * z +
-          0.5 * (z.transpose() * cov_ * z)(0)
-      );
-    };
+    return (
+      mean.transpose() * z +
+      0.5 * (z.transpose() * cov * z)(0)
+    );
   }
 
 };

@@ -9,6 +9,9 @@ add_executable(gauss_legendre
 add_executable(bb76spreadcall
 	bb76spreadcall.cpp)
 
+add_executable(b76vanilla
+	b76vanilla.cpp)
+
 target_link_libraries(
 	normal
 	fpricing
@@ -21,5 +24,10 @@ target_link_libraries(
 
 target_link_libraries(
 	bb76spreadcall
+	fpricing
+	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+target_link_libraries(
+	b76vanilla
 	fpricing
 	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

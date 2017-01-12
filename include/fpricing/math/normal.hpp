@@ -9,7 +9,6 @@
 namespace fpricing {
 namespace math {
 
-
 /// Cdf of a standard normal random variable.
 double stdnormcdf(double x)
 {
@@ -21,7 +20,6 @@ double stdnormpdf(double x)
 {
   return 1/std::sqrt(2*M_PI) * std::exp(-x*x/2);
 }
-
 
 namespace distr {
 

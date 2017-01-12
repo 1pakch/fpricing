@@ -123,11 +123,11 @@ class AffineDrift
 // Specific Gaussian processes
 //
 
-/// Univariate Black76 process.
-struct Black76Process:
+/// Univariate Black-76 returns process.
+struct Black76ReturnsProcess:
     public GaussianProcess<1, ExponentialMartingaleDrift>
 {
-  Black76Process(double vol):
+  Black76ReturnsProcess(double vol):
     GaussianProcess<1, ExponentialMartingaleDrift>{
       {},
       math::covmatrix<1>({vol*vol})
@@ -135,11 +135,11 @@ struct Black76Process:
   {}
 };
 
-/// Two correlated Black-76 processes.
-struct BivariateBlack76Process:
+/// Two correlated Black-76 returns processes.
+struct BivariateBlack76ReturnsProcess:
     public GaussianProcess<2, ExponentialMartingaleDrift>
 {
-  BivariateBlack76Process(double vol1, double vol2, double corr):
+  BivariateBlack76ReturnsProcess(double vol1, double vol2, double corr):
     GaussianProcess<2, ExponentialMartingaleDrift>{
       {}, // zero drift
       math::covmatrix<2>::from_vols_and_corr(vol1, vol2, corr)

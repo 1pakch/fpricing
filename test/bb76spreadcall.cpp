@@ -13,7 +13,7 @@ double bb76spreadCall(double F1, double F2, double strike,
                       double v1, double v2, double rho,
                       double tau)
 {
-  auto process = BivariateBlack76Process(v1, v2, rho);
+  auto process = BivariateBlack76ReturnsProcess(v1, v2, rho);
   auto state = math::vector<2>({std::log(F1), std::log(F2)});
   auto distribution = process.get_conditional_distribution(0, tau, state);
   return ndspreadcall(distribution, strike);

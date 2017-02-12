@@ -2,7 +2,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include <fpricing/processes/gaussian.hpp>
+#include <fpricing/processes/gbm.hpp>
 #include <fpricing/pricers/vanilla/gbs.hpp>
 #include <iostream>
 
@@ -16,9 +16,9 @@ double atmApprox(double F0, double vol, double tau)
 
 double b76call(double F0, double strike, double vol, double tau)
 {
-  auto process = Black76ReturnsProcess(vol);
+  auto process = Black76Process(vol);
   auto state = math::vector<1>({std::log(F0)});
-  auto distribution = process.get_conditional_distribution(0, tau, state);
+  auto distribution = process.log_returns_distr(0, tau, state);
   return gbs(distribution, strike);
 }
 

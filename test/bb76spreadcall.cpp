@@ -2,7 +2,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include <fpricing/processes/gaussian.hpp>
+#include <fpricing/processes/gbm.hpp>
 #include <fpricing/pricers/spread/ndspreadcall.hpp>
 
 
@@ -13,9 +13,9 @@ double bb76spreadCall(double F1, double F2, double strike,
                       double v1, double v2, double rho,
                       double tau)
 {
-  auto process = BivariateBlack76ReturnsProcess(v1, v2, rho);
+  auto process = BivariateBlack76Process(v1, v2, rho);
   auto state = math::vector<2>({std::log(F1), std::log(F2)});
-  auto distribution = process.get_conditional_distribution(0, tau, state);
+  auto distribution = process.log_returns_distr(0, tau, state);
   return ndspreadcall(distribution, strike);
 }
 

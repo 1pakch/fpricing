@@ -43,24 +43,30 @@ class Normal
 
   // The distribution resulting from premultiplying by a matrix A.
   template<int K>
-  Normal<K> premultiply(matrix<K, N> A)
+  Normal<K> premultiply(matrix<K, N> A) const
   {
     return Normal<K>(A*mean, A*cov*A.transpose());
   }
 
   // The distribution resulting from adding a constant vector.
-  decltype(auto) add(const vector<N>& mu)
+  decltype(auto) add(const vector<N>& mu) const
   {
     return Normal(mean + mu, cov);
   }
 
-  // Returns the log Laplace transform function.
-  komplex log_laplace_transform(cxvector<N> z)
+  // Returns the log Laplace transform.
+  komplex log_laplace_transform(cxvector<N> z) const
   {
     return (
-      mean.transpose() * z +
+      (mean.transpose() * z)(0) +
       0.5 * (z.transpose() * cov * z)(0)
     );
+  }
+
+  // Returns the Laplace transform.
+  komplex laplace_transform(cxvector<N> z) const
+  {
+    return std::exp(log_laplace_transform(z));
   }
 
 };

@@ -1,8 +1,11 @@
 #define BOOST_TEST_MODULE normal
 
+#include <iostream>
+
 #include <boost/test/included/unit_test.hpp>
 #include <fpricing/math/types.hpp>
 #include <fpricing/math/normal.hpp>
+#include <fpricing/math/fdmoments.hpp>
 
 
 using namespace fpricing;
@@ -31,4 +34,40 @@ BOOST_AUTO_TEST_CASE(init)
   BOOST_CHECK_EQUAL( sum.ndim(), 1 );
   BOOST_CHECK_CLOSE( sum.mean(0), 3, eps );
   BOOST_CHECK_CLOSE( sum.cov(0,0), 7, eps );
+}
+
+
+BOOST_AUTO_TEST_CASE(fdmoments)
+{
+  const int N = 3;
+  const double step = 1e-4;
+  const double eps_mean = 1e-2;
+  const double eps_cov = 1e-1;
+  
+  auto mu = vector<N>({1, 2, 3});
+  auto cov = covmatrix<N>({
+      {1, 1, 2},
+      {1, 4, 4},
+      {2, 4, 16}}
+  );
+  auto d = distr::Normal<N>(mu, cov);
+
+  auto lt = [&d](cxvector<N> z){ return d.laplace_transform(z); };
+
+  auto mu_approx = fd_mean<N>(lt, step);
+  //std::cout << mu_approx << std::endl;
+  
+  BOOST_CHECK_CLOSE( mu(0), mu_approx(0), eps_mean );
+  BOOST_CHECK_CLOSE( mu(1), mu_approx(1), eps_mean );
+
+  auto cov_approx = fd_cov<N>(lt, mu, step);
+  //std::cout << cov_approx << std::endl;
+  
+  BOOST_CHECK_CLOSE( cov(0,0), cov_approx(0,0), eps_cov );
+  BOOST_CHECK_CLOSE( cov(1,1), cov_approx(1,1), eps_cov );
+  BOOST_CHECK_CLOSE( cov(2,2), cov_approx(2,2), eps_cov );
+  
+  BOOST_CHECK_CLOSE( cov(0,1), cov_approx(0,1), eps_cov );
+  BOOST_CHECK_CLOSE( cov(0,2), cov_approx(0,2), eps_cov );
+  BOOST_CHECK_CLOSE( cov(1,2), cov_approx(1,2), eps_cov );
 }

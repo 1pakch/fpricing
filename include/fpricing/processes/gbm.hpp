@@ -3,6 +3,8 @@
 #ifndef GBM_HPP
 #define GBM_HPP 
 
+#include <cmath>
+
 #include <fpricing/math/types.hpp>
 #include <fpricing/math/normal.hpp>
 
@@ -20,9 +22,14 @@ struct TransformCoefficients
   
   const math::cxvector<N> linear_term {};
 
-  math::komplex log_transform(math::vector<N> state) const
+  math::komplex dot(math::vector<N> state) const
   {
     return const_term + state.dot(linear_term);
+  }
+
+  math::komplex expdot(math::vector<N> state) const
+  {
+    return std::exp(this->dot(state));
   }
 };
 
@@ -56,8 +63,8 @@ class GeometricBrownianMotion
       drift(-0.5*cov.diagonal()), cov(cov)
   {}
 
-  /// Distribution of log returns
-  math::distr::Normal<N> log_returns_distr(
+  /// Distribution of log state
+  math::distr::Normal<N> log_state_distr(
       double t,
       double T,
       math::vector<N> state
@@ -76,8 +83,12 @@ class GeometricBrownianMotion
       math::cxvector<N> z
   ) const
   {
+    auto x = (T-t) * (
+        drift.transpose() * z
+        + 0.5*(z.transpose() * cov * z)
+    );
     return TransformCoefficients<N>{
-      (T-t) * ((drift * z) + 0.5*(cov * z).dot(z)),
+      x(0),
       z
     };
   }

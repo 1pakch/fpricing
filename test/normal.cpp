@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(init)
 }
 
 
-BOOST_AUTO_TEST_CASE(fdmoments)
+BOOST_AUTO_TEST_CASE(moments)
 {
   const int N = 3;
   const double step = 1e-4;

@@ -3,6 +3,9 @@ include_directories (${PROJECT_SOURCE_DIR}/include)
 add_executable(normal
 	normal.cpp)
 
+add_executable(gbm
+	gbm.cpp)
+
 add_executable(gauss_legendre
 	gauss_legendre.cpp)
 
@@ -29,5 +32,10 @@ target_link_libraries(
 
 target_link_libraries(
 	b76vanilla
+	fpricing
+	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+target_link_libraries(
+	gbm
 	fpricing
 	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

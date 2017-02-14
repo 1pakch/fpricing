@@ -18,7 +18,7 @@ double b76call(double F0, double strike, double vol, double tau)
 {
   auto process = Black76Process(vol);
   auto state = math::vector<1>({std::log(F0)});
-  auto distribution = process.log_returns_distr(0, tau, state);
+  auto distribution = process.log_state_distr(0, tau, state);
   return gbs(distribution, strike);
 }
 

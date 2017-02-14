@@ -96,7 +96,6 @@ math::covmatrix<N> fd_cov(const Lt& lt, math::vector<N> mean, double eps=1e-6)
   return fd_cov<N, Lt>(lt, eps) - mean * mean.transpose();
 }
 
-
 } // namespace math
 
 } // namespace fpricing
